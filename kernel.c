@@ -65,11 +65,11 @@ uint8_t terminal_color;
 uint16_t* terminal_buffer;
 
 /* Création d'un écran vide */
-void terminal_initialize(void)
-{
+void terminal_initialize(void) {
     terminal_row = 0;
     terminal_column = 0;
-    terminal_color = vga_entry_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
+    // Écriture noir sur fond blanc
+    terminal_color = vga_entry_color(VGA_COLOR_BLACK, VGA_COLOR_WHITE);
     terminal_buffer = (uint16_t*) 0xB8000;
     for (size_t y = 0; y < VGA_HEIGHT; y++) {
         for (size_t x = 0; x < VGA_WIDTH; x++) {
@@ -80,21 +80,18 @@ void terminal_initialize(void)
 }
 
 /* Couleur du terminal */
-void terminal_setcolor(uint8_t color)
-{
+void terminal_setcolor(uint8_t color) {
     terminal_color = color;
 }
 
 /* Ajout d'un caractère à une position précise */
-void terminal_putentryat(char c, uint8_t color, size_t x, size_t y)
-{
+void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
     const size_t index = y * VGA_WIDTH + x;
     terminal_buffer[index] = vga_entry(c, color);
 }
 
 /* Ajout d'un caractère à la position courante du curseur */
-void terminal_putchar(char c)
-{
+void terminal_putchar(char c) {
     terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
     if (++terminal_column == VGA_WIDTH) {
         terminal_column = 0;
@@ -104,21 +101,18 @@ void terminal_putchar(char c)
 }
 
 /* Écris une chaine de caractère en fonction de la taille de la chaine */
-void terminal_write(const char* data, size_t size)
-{
+void terminal_write(const char* data, size_t size) {
     for (size_t i = 0; i < size; i++)
         terminal_putchar(data[i]);
 }
 
 /* Écris une chaine de caractère  */
-void terminal_writestring(const char* data)
-{
+void terminal_writestring(const char* data) {
     terminal_write(data, strlen(data));
 }
 
 /* Lancement du kernel */
-void kernel_main(void)
-{
+void kernel_main(void) {
     /* Création de l'interface du terminal */
     terminal_initialize();
 
