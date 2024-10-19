@@ -1,6 +1,6 @@
 print_string:
     mov al, [bx] ; Un symbole du string
-    cmp al, 9  ; Si > 9 on retourne au code de base
+    cmp al, 0  ; Si = 0 on retourne au code de base
     je done
 
     mov ah, 0x0E

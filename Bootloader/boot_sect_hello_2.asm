@@ -1,21 +1,26 @@
 ; A boot sector that prints strings with function.
 
-mov al, 'e'  ;Use bx as a parameter to our function, so
-call print_string  ;We can specify the address of a string.
-
-mov al, 'e'
+[ org 0x7c00 ]
+mov bx, HELLO_MSG
 call print_string
+
+mov bx, GOODBYE_MSG
+call print_string
+
+mov dx, 0xFFFF
+call print_hex
 
 jmp $
 
 ; Variables
-
 HELLO_MSG:
-    db 'Hello, World From an Assembly Function!', 0 ; <-- The zero on the end tells our routine
+    db 'Hello, World From an Assembly Function!', 13, 10, 0
 
 GOODBYE_MSG:
-    db 'Goodbye!', 0
+    db 'Goodbye!', 13, 10, 0
 
+%include "print_string.asm"
+%include "print_hex.asm"
 
 times 510 -( $ - $$ ) db 0
 dw 0xaa55
