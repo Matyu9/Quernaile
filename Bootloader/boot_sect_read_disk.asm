@@ -1,44 +1,33 @@
 ; A boot sector that prints strings with function.
+; This code doesn't work I don't know why but nevermind...
 
 BITS 16
-[ org 0x7c00 ]
-
-; Initialisation des segments
-xor ax, ax
-mov ds, ax
-mov es, ax
-
-mov [BOOT_DRIVE], dl ; Store boot drive un dl for later
-
-mov bp, 0x8000 ; Move the stack out of the way
-mov sp, bp     ; At 0x8000
+ORG 0x7C00
 
 mov bx, LOAD_MSG
 call print_string
 
-; Préparation des paramètres de lecture du disque
-mov ax, 0x0900         ; Segment value
-mov es, ax             ; ES = 0x0900
-xor bx, bx             ; BX = 0, donc ES:BX pointe sur 0x90000
-mov dh, 2              ; Nombre de secteurs à lire
-mov dl, [BOOT_DRIVE]   ; Disque source
-mov ch, 0              ; Cylindre 0
-mov cl, 2              ; Commencer au secteur 2 (après le boot sector)
-mov al, dh             ; Nombre de secteurs dans AL aussi
-mov ah, 0x02           ; Fonction de lecture BIOS
+mov [BOOT_DRIVE], dl
 
+mov bp, 0x8000
+mov sp, bp
+
+mov bx, 0x9000
+mov dh, 2
+mov dl, [BOOT_DRIVE]
 call disk_load
 
-mov dx, [es:bx] ; Print the first word stored at 0x9000 (0xdada)
+mov dx, [0x9000]
 call print_hex
 
-mov dx, [es:bx + 512] ; Print the first word of the 2nd sector (0xface)
+mov dx, [0x9000 + 512]
 call print_hex
 
 mov bx, GOODBYE_MSG
 call print_string
 
 jmp $
+
 
 ; Variables
 LOAD_MSG:
@@ -57,7 +46,6 @@ BOOT_DRIVE:
 
 times 510 -( $ - $$ ) db 0
 dw 0xaa55
-
 
 ; Load data outside of the 512 byte boot sector
 times 256 dw 0xdada
