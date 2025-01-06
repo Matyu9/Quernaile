@@ -10,9 +10,8 @@ call print_string
 mov [BOOT_DRIVE], dl
 
 mov bp, 0x8000
-mov sp, bp
-
-mov bx, 0x9000
+mov es, ax
+xor bx, bx              ; Offset mémoire
 mov dh, 2
 mov dl, [BOOT_DRIVE]
 call disk_load
@@ -31,7 +30,7 @@ jmp $
 
 ; Variables
 LOAD_MSG:
-    db 'Loading the disk...', 13, 10, 0
+    db 'Loading the disk... CACAAA', 13, 10, 0
 
 GOODBYE_MSG:
     db 'Goodbye!', 13, 10, "All is good I think" , 13, 10, 0
@@ -48,5 +47,5 @@ times 510 -( $ - $$ ) db 0
 dw 0xaa55
 
 ; Load data outside of the 512 byte boot sector
-times 256 dw 0xdada
-times 256 dw 0xface
+; times 256 dw 0xdada
+; times 256 dw 0xface
